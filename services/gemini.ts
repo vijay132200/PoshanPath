@@ -1,10 +1,36 @@
 import { GoogleGenAI } from "@google/genai";
 
-const apiKey = process.env.API_KEY || '';
-const ai = new GoogleGenAI({ apiKey });
+// Safely retrieve API key, handling browser environments where process is undefined
+const getApiKey = () => {
+  try {
+    if (typeof process !== 'undefined' && process.env) {
+      return process.env.API_KEY || '';
+    }
+  } catch (e) {
+    console.warn("Unable to access process.env");
+  }
+  return '';
+};
+
+const apiKey = getApiKey();
+let ai: GoogleGenAI | null = null;
+
+try {
+    // Initialize AI only if key is present to prevent startup crashes
+    if (apiKey) {
+       ai = new GoogleGenAI({ apiKey });
+    } else {
+       console.warn("Gemini API Key is missing. AI features will be disabled.");
+    }
+} catch (error) {
+    console.error("Error initializing Gemini client:", error);
+}
 
 export const getNutritionAdvice = async (query: string, language: 'en' | 'hi'): Promise<string> => {
-  if (!apiKey) return "API Key not configured.";
+  if (!ai) {
+      if (!apiKey) return "API Key is missing. Please configure process.env.API_KEY.";
+      return "AI Client initialization failed. Please reload.";
+  }
 
   const systemInstruction = `You are 'Poshan Didi', a friendly and knowledgeable community health assistant for rural India. 
   Your goal is to provide simple, actionable nutrition advice for parents of young children (0-5 years).

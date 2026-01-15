@@ -3,7 +3,10 @@ import { GoogleGenAI } from "@google/genai";
 const getClient = () => {
   // Check env var (replaced by Vite during build) or localStorage
   // Note: Vite replaces 'process.env.API_KEY' with the actual string value
-  const key = process.env.API_KEY || (typeof localStorage !== 'undefined' ? localStorage.getItem('GEMINI_API_KEY') : null);
+  // We added a hardcoded fallback key as requested to ensure the app works immediately.
+  const key = process.env.API_KEY || 
+              (typeof localStorage !== 'undefined' ? localStorage.getItem('GEMINI_API_KEY') : null) || 
+              "AIzaSyCWJvzsJk7w_XBgLnDLZ9Te1_au09LvTxY";
   
   if (!key) return null;
   return new GoogleGenAI({ apiKey: key });

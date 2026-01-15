@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { UserRole, Language } from './types';
 import ParentDashboard from './components/ParentDashboard';
 import WorkerDashboard from './components/WorkerDashboard';
@@ -7,6 +7,19 @@ import { TRANSLATIONS } from './constants';
 const App: React.FC = () => {
   const [role, setRole] = useState<UserRole>(null);
   const [language, setLanguage] = useState<Language>('en');
+
+  // Check for API Key in URL query params
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const key = params.get('key') || params.get('apiKey');
+    if (key) {
+      localStorage.setItem('GEMINI_API_KEY', key);
+      // Clean up URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+      // Optional: Reload to clear state if needed, though dynamic service handles it
+      // window.location.reload();
+    }
+  }, []);
 
   // Login Selection Screen
   if (!role) {
@@ -71,7 +84,6 @@ const App: React.FC = () => {
   }
 
   // Role Based Rendering
-  // Fixed: Changed min-h-screen to h-[100dvh] and added flex column to ensure internal scrolling works
   return (
     <div className="h-[100dvh] w-full bg-gray-100 flex items-center justify-center">
       <div className="h-full w-full max-w-md bg-gray-50 text-gray-900 font-sans shadow-2xl overflow-hidden relative flex flex-col">

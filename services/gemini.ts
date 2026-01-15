@@ -1,13 +1,20 @@
 import { GoogleGenAI } from "@google/genai";
 
-const apiKey = process.env.API_KEY;
-// Initialize only if key exists to avoid immediate errors, though usage will fail gracefully
-const ai = apiKey ? new GoogleGenAI({ apiKey }) : null;
+const getClient = () => {
+  // Check env var (replaced by Vite during build) or localStorage
+  // Note: Vite replaces 'process.env.API_KEY' with the actual string value
+  const key = process.env.API_KEY || (typeof localStorage !== 'undefined' ? localStorage.getItem('GEMINI_API_KEY') : null);
+  
+  if (!key) return null;
+  return new GoogleGenAI({ apiKey: key });
+};
 
 export const getNutritionAdvice = async (query: string, language: 'en' | 'hi'): Promise<string> => {
+  const ai = getClient();
+
   if (!ai) {
-    console.error("Gemini API Key is missing. Please set API_KEY in your environment variables.");
-    return "Configuration Error: API Key is missing. Please contact support.";
+    console.error("Gemini API Key is missing.");
+    return "Configuration Error: API Key is missing. Please set API_KEY in env or add ?key=YOUR_KEY to the URL.";
   }
 
   const systemInstruction = `You are 'Poshan Didi', a friendly and knowledgeable community health assistant for rural India. 

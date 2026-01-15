@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Analytics } from '@vercel/analytics/react';
 import { UserRole, Language } from './types';
 import ParentDashboard from './components/ParentDashboard';
 import WorkerDashboard from './components/WorkerDashboard';
@@ -25,7 +26,8 @@ const App: React.FC = () => {
   if (!role) {
     const t = TRANSLATIONS[language];
     return (
-      <div className="min-h-screen bg-brand-50 flex flex-col items-center justify-center p-6">
+      <>
+        <div className="min-h-screen bg-brand-50 flex flex-col items-center justify-center p-6">
         <div className="mb-8 flex flex-col items-center">
           <div className="w-20 h-20 bg-brand-500 rounded-full flex items-center justify-center text-4xl mb-4 shadow-lg text-white">
             🍲
@@ -80,29 +82,34 @@ const App: React.FC = () => {
           </button>
         </div>
       </div>
+      <Analytics />
+    </>
     );
   }
 
   // Role Based Rendering
   return (
-    <div className="h-[100dvh] w-full bg-gray-100 flex items-center justify-center">
-      <div className="h-full w-full max-w-md bg-gray-50 text-gray-900 font-sans shadow-2xl overflow-hidden relative flex flex-col">
-          <button 
-            onClick={() => setRole(null)} 
-            className="absolute top-4 right-4 text-xs bg-white/80 backdrop-blur-sm border border-gray-200 px-2 py-1 rounded hover:bg-white z-50 shadow-sm"
-          >
-            Logout
-          </button>
-          
-          <div className="flex-1 w-full overflow-hidden flex flex-col">
-            {role === 'parent' ? (
-              <ParentDashboard language={language} />
-            ) : (
-              <WorkerDashboard language={language} />
-            )}
-          </div>
+    <>
+      <div className="h-[100dvh] w-full bg-gray-100 flex items-center justify-center">
+        <div className="h-full w-full max-w-md bg-gray-50 text-gray-900 font-sans shadow-2xl overflow-hidden relative flex flex-col">
+            <button 
+              onClick={() => setRole(null)} 
+              className="absolute top-4 right-4 text-xs bg-white/80 backdrop-blur-sm border border-gray-200 px-2 py-1 rounded hover:bg-white z-50 shadow-sm"
+            >
+              Logout
+            </button>
+            
+            <div className="flex-1 w-full overflow-hidden flex flex-col">
+              {role === 'parent' ? (
+                <ParentDashboard language={language} />
+              ) : (
+                <WorkerDashboard language={language} />
+              )}
+            </div>
+        </div>
       </div>
-    </div>
+      <Analytics />
+    </>
   );
 };
 

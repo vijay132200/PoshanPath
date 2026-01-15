@@ -1,26 +1,12 @@
 import { GoogleGenAI } from "@google/genai";
 
-// Helper to safely get API key without crashing in browser if process is undefined
-const getApiKey = () => {
-  try {
-    // Vercel/Vite usually replace process.env.API_KEY at build time.
-    // However, if running in a raw ESM environment, we need to check existence.
-    if (typeof process !== 'undefined' && process.env) {
-      return process.env.API_KEY || '';
-    }
-  } catch (e) {
-    console.warn('Environment variable access failed', e);
-  }
-  return '';
-};
-
-const apiKey = getApiKey();
+const apiKey = process.env.API_KEY;
 // Initialize only if key exists to avoid immediate errors, though usage will fail gracefully
 const ai = apiKey ? new GoogleGenAI({ apiKey }) : null;
 
 export const getNutritionAdvice = async (query: string, language: 'en' | 'hi'): Promise<string> => {
   if (!ai) {
-    console.error("Gemini API Key is missing. Please set the API_KEY environment variable in your deployment settings.");
+    console.error("Gemini API Key is missing. Please set API_KEY in your environment variables.");
     return "Configuration Error: API Key is missing. Please contact support.";
   }
 
